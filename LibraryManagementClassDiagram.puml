@@ -1,0 +1,124 @@
+@startuml
+
+title <b>Library Management Classes diagram</b>
+' === User hierarchy ===
+class User {
+    - userID: int
+    - firstname: String
+    - surname: String
+    - email: String
+    - passwordHash: String
+    - Phone: int
+    - gender: String
+    - role: String
+    + login()
+    + logout()
+}
+
+class Admin {
+    + manageUsers()
+    + manageBooks()
+    + viewReports()
+}
+
+class Student {
+    + borrowBook(bookID: int)
+    + returnBook(bookID: int)
+}
+
+class Librarian {
+    + addBook(book: Book)
+    + deleteBook(bookID: int)
+    + issueBook(bookID: int, userID: int)
+    + returnBook(bookID: int, userID: int)
+}
+
+User <|-- Admin
+User <|-- Student
+User <|-- Librarian
+
+' === Book and related classes ===
+class Book {
+    - bookID: int
+    - title: String
+    - author: String
+    - publisher: String
+    - isbn: int
+    - category: String
+    + isAvailable(): boolean
+}
+
+' === Transactions ===
+class Transaction {
+    - transactionID: int
+    - bookID: int
+    - userID: int
+    - issueDate: Date
+    - dueDate: Date
+    - returnDate: Date
+    + isReturned(): boolean
+}
+
+class BorrowingTransaction {
+    + borrow()
+    + extendDueDate()
+}
+
+class ReturningTransaction {
+    + returnBook()
+}
+
+Transaction <|-- BorrowingTransaction
+Transaction <|-- ReturningTransaction
+
+' === Database Connection ===
+class DBConnection {
+    + getConnection(): Connection
+    + closeConnection()
+}
+
+' === GUI Panels and Forms ===
+class LoginForm {
+    - emailField: JTextField
+    - passwordField: JPasswordField
+    + login()
+}
+
+class RegistrationForm {
+    - firstnameField: JTextField
+    - surnameField: JTextField
+    - emailField: JTextField
+    - passwordField: JPasswordField
+    + registerUser()
+}
+
+class AdminDashboard {
+    + showUserManagement()
+    + showBooksManagement()
+    + showReports()
+}
+
+class StudentPanel {
+    + showAvailableBooks()
+    + borrowBook()
+    + returnBook()
+}
+
+class LibrarianPanel {
+    + issueBook()
+    + returnBook()
+    + addBook()
+    + deleteBook()
+}
+
+LoginForm --> User : "validates credentials"
+RegistrationForm --> User : "creates new user"
+AdminDashboard --> Admin
+StudentPanel --> Student
+LibrarianPanel --> Librarian
+
+' === Relationships ===
+User "1" <-- "0..*" Transaction : performs >
+Book "1" <-- "0..*" Transaction : involves >
+
+@enduml

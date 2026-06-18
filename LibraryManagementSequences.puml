@@ -1,0 +1,106 @@
+@startuml
+title <b>Library Management Sequences diagram</b>
+
+
+'===================
+' Book Issuing Sequence
+'===================
+actor User as User
+participant LibrarianPanel as LBPanel
+participant DBConnection as DBConn
+participant Database as DB
+
+User -> LBPanel : select book to issue
+LBPanel -> LBPanel : check book availability
+alt book not available
+    LBPanel -> User : show "Book not available" message
+else book available
+    LBPanel -> DBConn : getConnection()
+    DBConn -> DB : UPDATE books SET status='issued' WHERE bookID=?
+    DB --> DBConn : success/failure
+    alt success
+        LBPanel -> DB : INSERT INTO issued_books (userID, bookID, issueDate)
+        DB --> LBPanel : success/failure
+        alt success
+            LBPanel -> User : show "Book issued successfully"
+        else failure
+            LBPanel -> User : show error message
+        end
+    else failure
+        LBPanel -> User : show error message
+    end
+end
+
+'===================
+' Book Borrowing Sequence
+'===================
+actor Student as Student
+participant StudentPanel as StPanel
+
+Student -> StPanel : request to borrow book
+StPanel -> DBConn : getConnection()
+DBConn -> DB : check book availability
+alt available
+    StPanel -> DB : insert borrowing record
+    DB --> StPanel : success/failure
+    alt success
+        StPanel -> Student : show success message
+    else failure
+        StPanel -> Student : show error message
+    end
+else not available
+    StPanel -> Student : show "Book unavailable"
+end
+
+'===================
+' Book Returning Sequence
+'===================
+User -> LBPanel : select book to return
+LBPanel -> DBConn : getConnection()
+DBConn -> DB : DELETE FROM issued_books WHERE bookID=? AND userID=?
+DB --> DBConn : success/failure
+alt success
+    LBPanel -> DB : UPDATE books SET status='available' WHERE bookID=?
+    DB --> LBPanel : success/failure
+    alt success
+        LBPanel -> User : show "Book returned successfully"
+    else failure
+        LBPanel -> User : show error message
+    end
+else failure
+    LBPanel -> User : show error message
+end
+
+'===================
+' Adding a Book Sequence
+'===================
+actor Librarian as Librarian
+Librarian -> LBPanel : fill in book details
+LBPanel -> LBPanel : validateInputs()
+alt validation fails
+    LBPanel -> Librarian : show validation error
+else validation success
+    LBPanel -> DBConn : getConnection()
+    DBConn -> DB : INSERT INTO books (...)
+    DB --> DBConn : success/failure
+    alt success
+        LBPanel -> Librarian : show "Book added successfully"
+    else failure
+        LBPanel -> Librarian : show error message
+    end
+end
+
+'===================
+' Deleting a Book Sequence
+'===================
+Librarian -> LBPanel : select book to delete
+LBPanel -> DBConn : getConnection()
+DBConn -> DB : DELETE FROM books WHERE bookID=?
+DB --> DBConn : success/failure
+alt success
+    LBPanel -> Librarian : show "Book deleted successfully"
+else failure
+    LBPanel -> Librarian : show error message
+end
+
+@enduml
