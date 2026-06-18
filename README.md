@@ -143,7 +143,7 @@ jdbc:mysql://localhost:3306/project_db
 3. Add the MySQL JDBC Driver.
 4. Run the main application file.
 
-### Option 2: Run Using JAR
+### Option 2: Run Using JAR File On Your Terminal
 
 java -jar project-1.0-SNAPSHOT.jar
 
