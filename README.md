@@ -191,7 +191,7 @@ Jonathan Elochukwu Festus
 
 Aspiring Software Engineer | Java Developer | Web Developer
 
-GitHub: https://github.com/Jona710than/Library-Management-System.git
+GitHub: https://github.com/Jona710than/Library-Management-System
 
 LinkedIn: https://linkedin.com/in/jonathan-festus-960873257
 
